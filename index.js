@@ -28,7 +28,7 @@ module.exports.query = async() =>{
     const cost_yesterday = results_yesterday[0].cost;
     const cost_today = results_today[0].cost;
     //Check for alert
-    if(cost_today < 1.5*cost_yesterday){
+    if(cost_today > 1.5*cost_yesterday){
       //Use SMTP for sending mail
       let transport = nodemailer.createTransport({
       host: 'smtp.gmail.com',
