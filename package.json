@@ -1,0 +1,17 @@
+{
+  "name": "billing-gcp",
+  "description": "Automating billing alerts",
+  "version": "1.0.0",
+  "author": "Sukesh",
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": "googleapis/nodejs-bigquery",
+  "main": "index.js",
+  "start": "index.js",
+  "dependencies": {
+    "@google-cloud/bigquery": "^4.2.0",
+    "nodemailer":"^6.4.6",
+    "async": "^3.1.0"
+    }
+}
