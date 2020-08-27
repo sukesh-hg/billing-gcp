@@ -1,6 +1,10 @@
 const {BigQuery} = require('@google-cloud/bigquery');
 const nodemailer = require('nodemailer');
 const bigquery = new BigQuery();
+const webhookURL = '<add your google chat bot webhook url here >'
+const data = JSON.stringify({
+  'text': 'Billing Spike',
+});
 module.exports.query = async() =>{
   var yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
   var today = new Date().toISOString().slice(0,10);
@@ -44,7 +48,7 @@ module.exports.query = async() =>{
     from: 'abc@gmail.com', // Sender address
     to: 'xyz@domain.com',  // List of recipients
     subject: 'ALERT! GCP Billing Account', // Subject line
-    html: '<b>May require action.</b><br><br>There has been a spike in the billing today.<br><br>Regards,<br>DevOps'
+    html: '<b>May require action.</b><br><br>There has been a spike in the billing today.'
     };
     transport.sendMail(message, function(err, info) {
     if (err) {
@@ -52,6 +56,16 @@ module.exports.query = async() =>{
     } else {
       console.log(info);
     }
+    });
+    //Google Chat Alert
+    fetch(webhookURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: data,
+    }).then((response) => {
+    console.log(response);
     });
   }
 }
