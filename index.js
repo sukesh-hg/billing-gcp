@@ -1,4 +1,5 @@
 const {BigQuery} = require('@google-cloud/bigquery');
+const fetch = require('node-fetch');
 const nodemailer = require('nodemailer');
 const bigquery = new BigQuery();
 const webhookURL = '<add your google chat bot webhook url here >'
