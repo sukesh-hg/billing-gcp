@@ -3,6 +3,8 @@
 Keeping a keen eye on billing reports to avoid escalations is one of the bigger challenges when you opt for public Cloud vendors like GCP.
 This is an attempt to make it easier and introduce some level of automation. Today's accumulated cost is compared to the previous day costs and emails are sent out if there are spikes in today's cost.
 
+![alt text](https://i.imgur.com/BXKTf4y.jpg)
+
 PRE-REQUISITES:
 1. Billing Exports to BigQuery
 2. Access to Create and Edit Cloud Funtions, Cloud Scheduler.
