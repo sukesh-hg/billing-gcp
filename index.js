@@ -2,13 +2,11 @@ const {BigQuery} = require('@google-cloud/bigquery');
 const fetch = require('node-fetch');
 const nodemailer = require('nodemailer');
 const bigquery = new BigQuery();
-const webhookURL = '<add your google chat bot webhook url here >'
-const data = JSON.stringify({
-  'text': 'Billing Spike',
-});
+
 module.exports.query = async() =>{
   var yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
   var today = new Date().toISOString().slice(0,10);
+
   // Define query and params
   const query = `SELECT SUM(cost) AS cost
     FROM \`project-id.dataset-id.billing-export-table-name\`
@@ -23,19 +21,25 @@ module.exports.query = async() =>{
     location: 'US',
     params: {date: today}
   };
-    //Create query jobs
-    const [job_yesterday] = await bigquery.createQueryJob(options_yesterday);
-    const [job_today] = await bigquery.createQueryJob(options_today);
-    //Wait for the query to finish
-    const [results_yesterday] = await job_yesterday.getQueryResults();
-    const [results_today] = await job_today.getQueryResults();
-    //Save costs to variables
-    const cost_yesterday = results_yesterday[0].cost;
-    const cost_today = results_today[0].cost;
-    //Check for alert
-    if(cost_today > 1.5*cost_yesterday){
-      //Use SMTP for sending mail
-      let transport = nodemailer.createTransport({
+
+  //Create query jobs
+  const [job_yesterday] = await bigquery.createQueryJob(options_yesterday);
+  const [job_today] = await bigquery.createQueryJob(options_today);
+  //Wait for the query to finish
+  const [results_yesterday] = await job_yesterday.getQueryResults();
+  const [results_today] = await job_today.getQueryResults();
+  //Save costs to variables
+  const cost_yesterday = results_yesterday[0].cost;
+  const cost_today = results_today[0].cost;
+  
+  //Check for alert
+  if(cost_today > cost_yesterday){
+    //calculate percent hike
+    int perc_hike = 100*(cost_today - cost_yesterday)/cost_yesterday;
+    var notification = perc_hike+"% billing spike"
+    
+    //Use SMTP for sending mail alerts
+    let transport = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       secure: true,
       port: 465,
@@ -58,13 +62,16 @@ module.exports.query = async() =>{
       console.log(info);
     }
     });
-    //Google Chat Alert
-    fetch(webhookURL, {
+
+    //Google Chat notification
+    fetch(process.env.webhookURL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: data,
+    body: JSON.stringify({
+    'text': notification,
+     }),
     }).then((response) => {
     console.log(response);
     });
